@@ -17,6 +17,4 @@ socket.on('newMessage', function(message){
     console.log('newMessage from server', message);
 });
 
-socket.on('welcomeUser', function(message){
-    console.log('new msg2 from server', message);
-});
+ 
