@@ -6,7 +6,7 @@ const http = require('http');
 //downloads
 const express = require('express');
 const socketIO = require('socket.io');
-const {generateMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage} = require('./utils/message');
 const publicPath = path.join(__dirname, '/../public/'); 
 const port = process.env.PORT||3000; 
 let app = express();
@@ -30,13 +30,18 @@ io.on('connection', (socket) => {
         io.emit('newMessage', generateMessage(message.from, message.text));
     }); 
 
+    socket.on('createLocationMessage', (coords) =>{
+        io.emit('newLocationMessage', generateLocationMessage('Admin', 
+        coords.latitude, coords.longitude));
+        
+    });
     //socket.emit from Admin text Welcome to the chat group
     //socket.broadcast.emit from Admin text New user joined
 
       
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app, you have logged in at' + new Date().getTime() )); 
     socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user logged in')); 
- 
+    
     socket.on('disconnect', () => {
         console.log('user was disconnected');
     });

@@ -1,5 +1,5 @@
 //declarations
-const {generateMessage} = require('./message');
+const {generateMessage, generateLocationMessage} = require('./message');
 const expect = require('expect');
 
 describe('generateMessage', ()=> {
@@ -20,4 +20,18 @@ describe('generateMessage', ()=> {
 
     });
 
+});
+describe('generateLocationMessage',() =>{
+    it('should generate correct location object', () =>{
+        let param = {
+            from:'Rudra',
+            latitude: 17.4012623, 
+            longitude: 78.3355395,
+        }
+        let message = generateLocationMessage(param.from, param.latitude, param.longitude);
+        expect(message.createdAt).toBeGreaterThan(0);
+        expect(message).toHaveProperty('url');
+        expect(message.url).toEqual('https://www.google.com/maps/?q=17.4012623,78.3355395');
+        
+    });
 });
