@@ -25,9 +25,10 @@ io.on('connection', (socket) => {
     //socket.broadcast.emit  
 
     //Listen to port and create new message then send it back to browser
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('createMesage', message);
         io.emit('newMessage', generateMessage(message.from, message.text));
+        callback();
     }); 
 
     socket.on('createLocationMessage', (coords) =>{
