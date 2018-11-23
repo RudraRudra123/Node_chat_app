@@ -14,11 +14,15 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message){
-    console.log('newMessage from server', message);
-    let formattedTime = moment(message.createdAt).format('h:mm a')
-    let li = $('<li></li>');
-    li.text(`${message.from} ${formattedTime}: ${message.text}`);
-    $('#messages').append(li);
+    let template = $('#message-template').html();
+    let formattedTime = moment(message.createdAt).format('h:mm a');
+    let html = Mustache.render(template, {
+        text: message.text,
+        from: message.from,
+        createdAt: formattedTime
+    }); 
+    $('#messages').append(html);
+     
 });
 
 //Location services
@@ -29,7 +33,7 @@ locationButton.on('click', function () {
     //disabled button while the server is sending the location details
     locationButton.attr('disabled', 'disabled').text('Sending location');
     navigator.geolocation.getCurrentPosition(function (position){
-        console.log(position);
+
         locationButton.removeAttr('disabled').text('Send location');
         socket.emit('createLocationMessage', {
             latitude: position.coords.latitude,
@@ -44,13 +48,21 @@ locationButton.on('click', function () {
     });
 
 socket.on('newLocationMessage', function(message){
-    let li = $('<li></li>');
+    let template = $('#location-message-template').html();
+    let formattedTime = moment(message.createdAt).format('h:mm a');
+    let html = Mustache.render(template, {
+        from: message.from,
+        createdAt: formattedTime,
+        url: message.url
+    }); 
+
+/*     let li = $('<li></li>');
     let a  = $('<a target="_blank">MyCurrentLocation</a>');
     let formattedTime = moment(message.createdAt).format('h:mm a');
     li.text(`${message.from}: ${formattedTime} :`);
     a.attr('href', message.url);
-    li.append(a);
-    $('#messages').append(li);
+    li.append(a); */
+    $('#messages').append(html);
 });    
 //socket.emit('createMessage', generateMessage('fromClient','Message from index.js'));
 
