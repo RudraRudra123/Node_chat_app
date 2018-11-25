@@ -33,20 +33,23 @@ io.on('connection', (socket) => {
         socket.join(params.room); //join into a room
         users.addUser(socket.id, params.name, params.room);
         io.to(params.room).emit('updateUserList', users.getUserList(params.room));
-        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app, you have logged in at' + new Date().getTime()));
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'));
         socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `New user ${params.name} logged in`)); 
         callback();
     });
     //Listen to port and create new message then send it back to browser
     socket.on('createMessage', (message, callback) => {
-        console.log('createMesage', message);
-        io.emit('newMessage', generateMessage(message.from, message.text));
+        let user = users.getUser(socket.id);
+        if(user && isRealString(message.text))
+            io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
         callback();
     }); 
 
     socket.on('createLocationMessage', (coords) =>{
-        io.emit('newLocationMessage', generateLocationMessage('Admin', 
-        coords.latitude, coords.longitude));
+        let user = users.getUser(socket.id);
+        if(user)
+            io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, 
+            coords.latitude, coords.longitude));
         
     });
     //socket.emit from Admin text Welcome to the chat group
