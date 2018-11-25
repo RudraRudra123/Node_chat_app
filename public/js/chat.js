@@ -16,10 +16,30 @@ function scrollToBottom() {
 //const { generateMessage } = require('/../server/**/message.js');
 socket.on('connect', function () {
     console.log('Connected to server');
+    let params = jQuery.deparam(window.location.search);
+    socket.emit('join', params, function (err) {
+        if (err) {
+            alert(err);
+            window.location.href = '/';
+        }
+        else {
+            console.log('no error');
+        }
+
+    });
 });
+
 
 socket.on('disconnect', function() {
     console.log('Disconnected from server');
+});
+
+socket.on('updateUserList', function(users){
+    let ol = $('<ol></ol>');
+    users.forEach((user) =>{
+        ol.append($('<li></li>').text(user));
+    });
+    $('#users').html(ol);
 });
 
 socket.on('newMessage', function(message){
@@ -66,12 +86,6 @@ socket.on('newLocationMessage', function(message){
         url: message.url
     }); 
 
-/*     let li = $('<li></li>');
-    let a  = $('<a target="_blank">MyCurrentLocation</a>');
-    let formattedTime = moment(message.createdAt).format('h:mm a');
-    li.text(`${message.from}: ${formattedTime} :`);
-    a.attr('href', message.url);
-    li.append(a); */
     $('#messages').append(html);
     scrollToBottom();
 });    
