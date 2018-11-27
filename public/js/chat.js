@@ -24,6 +24,7 @@ socket.on('connect', function () {
         }
         else {
             console.log('no error');
+            $('#room').text(params.room);
         }
 
     });
@@ -107,5 +108,14 @@ socket.on('newLocationMessage', function(message){
         });
 
     });
+//Exit room    
+let exitRoom = $('#exit');
+exitRoom.on('click', function () {
+    let params = jQuery.deparam(window.location.search);
+    socket.emit('leaveRoom', {
+        room: params.room
+    });
+    window.location.href = '/';
+});
  
  

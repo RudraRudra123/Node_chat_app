@@ -55,6 +55,14 @@ io.on('connection', (socket) => {
     //socket.emit from Admin text Welcome to the chat group
     //socket.broadcast.emit from Admin text New user joined
     
+    socket.on('leaveRoom', (params) =>{
+        let user = users.removeUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left`));
+        }
+        socket.leave(params.room);
+    });
     socket.on('disconnect', () => {
         //If a user exits:
         //    1. remove the user from the list connected to a room
